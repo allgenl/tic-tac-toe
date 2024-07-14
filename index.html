@@ -11,8 +11,8 @@
 <div id="root"></div>
 
 <script type="text/babel">
-    const SYMBOL_X = "X"
-    const SYMBOL_O = "O"
+    const SYMBOL_X = "X";
+    const SYMBOL_O = "O";
 
     const computeWinner = (cells) => {
         const lines = [
@@ -35,14 +35,19 @@
                 return [a, b, c];
             }
         }
+
+        if (!cells.includes(null)) {
+            return 'draw';
+        }
     }
 
     function App() {
-        const [currentStep, setCurrentStep] = React.useState(SYMBOL_O);
-        const [cells, setCells] = React.useState([null, null, null, null, null, null, null, null, null]);
+        const cellsDefault = [null, null, null, null, null, null, null, null, null];
+        const symbolArray = [SYMBOL_O, SYMBOL_X]
+        const [currentStep, setCurrentStep] = React.useState(symbolArray[Math.floor(Math.random() * symbolArray.length)]);
+        const [cells, setCells] = React.useState(cellsDefault);
         const [winnerSequence, setWinnerSequence] = React.useState()
 
-        console.log(cells);
 
         const getSymbolClassName = (symbol) => {
             if (symbol === SYMBOL_O) return 'symbol--o';
@@ -71,10 +76,15 @@
 
         const winnerSymbol = winnerSequence ? cells[winnerSequence[0]] : undefined
 
+        const resetCells = () => {
+            setCells(cellsDefault);
+            setWinnerSequence();
+        }
+
         return (
             <div className="game">
                 <div className="game-info">
-                    {winnerSequence ? 'Победитель: ' : 'Ход: '} {renderSymbol(winnerSymbol ?? currentStep)}
+                    {winnerSequence ? (winnerSequence === 'draw' ? 'Ничья' : 'Победитель: ') : 'Ход: '} {winnerSequence !== 'draw' ? renderSymbol(winnerSymbol ?? currentStep) : ''}
                 </div>
                 <div className="game-field">
                     {cells.map((symbol, index) => {
@@ -87,8 +97,11 @@
                             {symbol ? renderSymbol(symbol) : null}
                         </button>
                     })}
-
                 </div>
+                <button
+                    className="reset"
+                    onClick={resetCells}
+                >Сбросить</button>
             </div>
         )
     }
@@ -146,6 +159,16 @@
 
     .symbol--o {
         color: green;
+    }
+
+    .reset {
+        background: none;
+        width: 91px;
+        height: 30px;
+        outline: none;
+        border: 1px solid grey;
+        cursor: pointer;
+        margin-top: 20px;
     }
 </style>
 </body>
